@@ -20,6 +20,7 @@ const productController = {
       director,
       writer,
       genres,
+      isPrime
     } = req.body;
     let document;
     try {
@@ -39,6 +40,7 @@ const productController = {
         director,
         writer,
         genres,
+        isPrime,
       });
     } catch (err) {
       return next(err);
@@ -62,6 +64,7 @@ const productController = {
       director,
       writer,
       genres,
+      isPrime,
     } = req.body;
     let document;
     try {
@@ -80,6 +83,7 @@ const productController = {
         director,
         genres,
         writer,
+        isPrime,
       });
     } catch (err) {
       return next(err);
@@ -104,6 +108,7 @@ const productController = {
       director,
       writer,
       genres,
+      isPrime,
     } = req.body;
 
     try {
@@ -124,6 +129,7 @@ const productController = {
           director,
           writer,
           genres,
+          isPrime,
         },
         { new: true }
       );
@@ -152,6 +158,7 @@ const productController = {
       director,
       genres,
       writer,
+      isPrime,
     } = req.body;
     let document;
     try {
@@ -170,7 +177,8 @@ const productController = {
           runtime,
           director,
           genres,
-          writer
+          writer,
+          isPrime,
         },
         { new: true }
       );

@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const productSchema = new Schema(
   {
     backdrop_path: { type: String, required: true },
-    genre_ids: {type: Array, required: true },
+    genre_ids: { type: Array, required: true },
     id: { type: Number, required: true },
     original_language: { type: String, required: true },
     original_title: { type: String, required: true },
@@ -18,7 +18,8 @@ const productSchema = new Schema(
     runtime: { type: Number, required: true },
     director: { type: String, required: true },
     writer: { type: String, required: true },
-    genres: {type: Array, required: true },
+    genres: { type: Array, required: true },
+    isPrime: { type: Boolean, required: true },
   },
   { timestamps: true, toJSON: { getters: true }, id: false }
 );
@@ -27,7 +28,7 @@ const productSchema = new Schema(
 const tvProductSchema = new Schema(
   {
     backdrop_path: { type: String, required: true },
-    genre_ids: {type: Array, required: true },
+    genre_ids: { type: Array, required: true },
     id: { type: Number, required: true },
     original_language: { type: String, required: true },
     original_name: { type: String, required: true },
@@ -39,7 +40,8 @@ const tvProductSchema = new Schema(
     runtime: { type: Number, required: true },
     director: { type: String, required: true },
     writer: { type: String, required: true },
-    genres: {type: Array, required: true },
+    genres: { type: Array, required: true },
+    isPrime: { type: Boolean, required: true },
   },
   { timestamps: true, toJSON: { getters: true }, id: false }
 );
