@@ -1,7 +1,8 @@
-import User from "./user";
+import User from "./User";
 import {
   Product,
   TVProduct,
+  Payment,
   Popular,
   Day,
   Configuration,
@@ -15,6 +16,7 @@ export {
   User,
   Product,
   TVProduct,
+  Payment,
   Popular,
   Day,
   Configuration,

@@ -32,24 +32,12 @@ const registerController = {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    
     // prepare the model
 
     const user = new User({
       name,
       email,
-      // type,
-      // plan,
-      // paymentType,
-      // paymentTransactionId,
-      // planStartDate,
-      // planEndDate,
-      // IP,
-      // image_src,
-      // token,
-      // init_vector,
-      // face_descriptor,
-      // timestamp,
       password: hashedPassword,
     });
     try {

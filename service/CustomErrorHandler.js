@@ -16,6 +16,9 @@ class CustomErrorHandler extends Error {
   static unAuthorized(message = "unAuthorized") {
     return new CustomErrorHandler(200, message);
   }
+  static userNotFound(message = "User Not Found") {
+    return new CustomErrorHandler(200, message);
+  }
 
   static serverError(message = "Internal server error") {
     return new CustomErrorHandler(500, message);

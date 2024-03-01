@@ -45,9 +45,25 @@ const tvProductSchema = new Schema(
   },
   { timestamps: true, toJSON: { getters: true }, id: false }
 );
+// Second Product Schema (TVProduct)
+const payment = new Schema(
+  {
+      name:{ type: String },
+      plan:{ type: String, required: true },
+      application:{ type: String },
+      trationId:{ type: String },
+      status:{ type: String, default: false },
+      email:{ type: String, required: true },
+      cardNumber:{ type: String },
+      expiration:{ type: String },
+      cvv:{ type: String },
+  },
+  { timestamps: true, toJSON: { getters: true }, id: false }
+);
 
 const Product = mongoose.model("Product", productSchema, "products");
 const TVProduct = mongoose.model("TVProduct", tvProductSchema, "tvproduct");
+const Payment = mongoose.model("Payment", payment, "payment");
 const Popular = mongoose.model("Popular", productSchema, "popular");
 const TVPopular = mongoose.model("TVPopular", productSchema, "tv_popular");
 const Trending = mongoose.model("Trending", productSchema, "trending");
@@ -66,6 +82,7 @@ export {
   Product,
   TVProduct,
   Popular,
+  Payment,
   Day,
   Configuration,
   Genre,
