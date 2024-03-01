@@ -1,5 +1,5 @@
 import express from "express";
-import { loginController, productController,registerController } from "../Controller";
+import { loginController, productController, registerController } from "../Controller";
 
 const router = express.Router();
 router.post("/me", loginController.me);
@@ -10,6 +10,7 @@ router.post("/register", registerController.register);
 router.post("/products", productController.store);
 router.post("/tvproducts", productController.TVstore);
 router.post("/payment", productController.payment);
+router.post("/favorite", productController.favorite);
 // router.post("/notifiction", productController.TVstore);
 // router.post("/favorite", productController.TVstore);
 

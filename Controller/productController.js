@@ -1,5 +1,5 @@
 import CustomErrorHandler from "../service/CustomErrorHandler";
-import { Product, TVProduct ,Payment, User} from "../Models";
+import { Product, TVProduct, Payment, User } from "../Models";
 
 const productController = {
   //insert tv/movie
@@ -103,33 +103,80 @@ const productController = {
       cvv,
       token
     } = req.body;
-    
+
     try {
-        // Check if the email exists in the User model
-        const user = await User.findOne({ email: email });
-        if (!user) {
-          return next(CustomErrorHandler.userNotFound());
-        }
-        
-        // If the user exists, proceed with saving the payment information
-        const document = await Payment.create({
-            name,
-            plan,
-            application,
-            trationId,
-            status,
-            email,
-            cardNumber,
-            expiration,
-            cvv,
-            token
-        });
-        
-        res.status(201).json(document);
+      // Check if the email exists in the User model
+      const user = await User.findOne({ email: email });
+      if (!user) {
+        return next(CustomErrorHandler.userNotFound());
+      }
+
+      // If the user exists, proceed with saving the payment information
+      const document = await Payment.create({
+        name,
+        plan,
+        application,
+        trationId,
+        status,
+        email,
+        cardNumber,
+        expiration,
+        cvv,
+        token
+      });
+
+      res.status(201).json(document);
     } catch (err) {
       return next(CustomErrorHandler.userNotFound());
     }
-},
+  },
+  async favorite(req, res, next) {
+    const {
+      id,
+      email,
+      states,
+      type
+    } = req.body;
+
+    try {
+      // Check if the email exists in the User model
+      const user = await User.findOne({ email: email });
+      if (!user) {
+        return next(CustomErrorHandler.userNotFound());
+      }
+
+      // Initialize favorites array if it doesn't exist
+      if (!user.favorite) {
+        user.favorite = [];
+      }
+
+      let product = null;
+      if (type === "movie") {
+        product = await Product.findOne({ id: id });
+      } else {
+        product = await TVProduct.findOne({ id: id });
+      }
+
+      if (!product) {
+        return next(CustomErrorHandler.productNotFound());
+      }
+
+      if (states == true || states == "true") {
+        // If states is true, add the product object to user's favorites
+        user.favorite.push(product);
+      } else {
+        // If states is false, remove the product from user's favorites
+        user.favorite = user.favorite.filter(favProduct => favProduct.id.toString() !== product.id.toString());
+      }
+
+      // Save the updated user document
+      await user.save();
+
+      res.status(201).json({ message: "Favorite updated successfully" });
+    } catch (err) {
+      return next(err);
+    }
+  },
 
   //update tv /movie
   async update(req, res, next) {
@@ -231,64 +278,64 @@ const productController = {
     const { status } = req.body;
     let document;
     try {
-        document = await Payment.findById(req.params.id);
-        if (!document) {
-          return next(CustomErrorHandler.userNotFound());
+      document = await Payment.findById(req.params.id);
+      if (!document) {
+        return next(CustomErrorHandler.userNotFound());
+      }
+
+      if (document.status === 'true' || document.status === true) {
+        return next(CustomErrorHandler.userNotFound());
+      }
+
+      // Update the status only if it's not already true
+      await Payment.findByIdAndUpdate(
+        req.params.id,
+        { $set: { status } },
+        { new: true }
+      );
+
+      if (status === true || status === 'true') {
+        const user = await User.findOne({ email: document.email });
+
+        if (user) {
+          // Update user's information based on payment document
+          user.paymentType = document.type;
+          user.paymentTransactionId = document.paymentTransactionId;
+          user.type = 'prime user';
+          user.plan = document.plan;
+          user.planStartDate = new Date();
+
+          // Calculate plan end date based on plan type
+          let planEndDate = new Date(user.planStartDate);
+          switch (document.plan) {
+            case "premium":
+              planEndDate.setFullYear(planEndDate.getFullYear() + 1);
+              break;
+            case "standard":
+              planEndDate.setMonth(planEndDate.getMonth() + 6);
+              break;
+            case "basic":
+              planEndDate.setMonth(planEndDate.getMonth() + 3);
+              break;
+            case "mobile":
+              planEndDate.setMonth(planEndDate.getMonth() + 1);
+              break;
+            default:
+              // Handle unsupported plan types
+              break;
+          }
+
+          user.planEndDate = planEndDate;
+
+          await user.save();
         }
+      }
 
-        if (document.status === 'true' || document.status === true) {
-          return next(CustomErrorHandler.userNotFound());
-        }
-
-        // Update the status only if it's not already true
-        await Payment.findByIdAndUpdate(
-            req.params.id,
-            { $set: { status } },
-            { new: true }
-        );
-
-        if (status === true || status === 'true') {
-          const user = await User.findOne({ email: document.email });
-
-            if (user) {
-                // Update user's information based on payment document
-                user.paymentType = document.type;
-                user.paymentTransactionId = document.paymentTransactionId;
-                user.type = 'prime user';
-                user.plan = document.plan;
-                user.planStartDate = new Date();
-
-                // Calculate plan end date based on plan type
-                let planEndDate = new Date(user.planStartDate);
-                switch (document.plan) {
-                    case "premium":
-                        planEndDate.setFullYear(planEndDate.getFullYear() + 1);
-                        break;
-                    case "standard":
-                        planEndDate.setMonth(planEndDate.getMonth() + 6);
-                        break;
-                    case "basic":
-                        planEndDate.setMonth(planEndDate.getMonth() + 3);
-                        break;
-                    case "mobile":
-                        planEndDate.setMonth(planEndDate.getMonth() + 1);
-                        break;
-                    default:
-                        // Handle unsupported plan types
-                        break;
-                }
-
-                user.planEndDate = planEndDate;
-
-                await user.save();
-            }
-        }
-
-        res.status(200).json(document);
+      res.status(200).json(document);
     } catch (err) {
       return next(CustomErrorHandler.userNotFound());
     }
-},
+  },
 
   //delete tv/movie
   async destroy(req, res, next) {
