@@ -11,7 +11,6 @@ router.post("/products", productController.store);
 router.post("/tvproducts", productController.TVstore);
 router.post("/payment", productController.payment);
 router.post("/favorite", productController.favorite);
-router.post("/notifiction", productController.notifiction);
 // router.post("/notifiction", productController.TVstore);
 // router.post("/favorite", productController.TVstore);
 
