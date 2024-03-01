@@ -6,6 +6,7 @@ import {
   Popular,
   Day,
   Configuration,
+  Notification,
   Genre,
   Movie_Genre,
   TVPopular,
@@ -24,4 +25,5 @@ export {
   Movie_Genre,
   TVPopular,
   Trending,
+  Notification,
 };

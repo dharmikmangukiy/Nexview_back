@@ -32,7 +32,7 @@ const registerController = {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     // prepare the model
 
     const user = new User({
@@ -47,6 +47,46 @@ const registerController = {
       return next(err);
     }
     res.json({ user });
+  },
+  async forgatPassword(req, res, next) {
+    // Validation
+    const forgotPasswordSchema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().pattern(new RegExp(/.{3,30}/)).required(),
+      newPassword: Joi.string().pattern(new RegExp(/.{3,30}/)).required(), // Add newPassword validation
+    });
+
+    const { error } = forgotPasswordSchema.validate(req.body);
+    if (error) {
+      return next(error);
+    }
+
+    const { email, password, newPassword } = req.body;
+
+    try {
+      // Check if user exists
+      const user = await User.findOne({ email });
+      if (!user) {
+        return next(CustomErrorHandler.notFound("User not found."));
+      }
+
+      // Check if current password matches
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return next(CustomErrorHandler.unauthorized("Invalid current password."));
+      }
+
+      // Hash newPassword
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+      // Update user's password
+      user.password = hashedNewPassword;
+      await user.save();
+
+      res.json({ message: "Password updated successfully." });
+    } catch (err) {
+      return next(err);
+    }
   },
 };
 

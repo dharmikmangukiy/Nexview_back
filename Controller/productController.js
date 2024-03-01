@@ -1,5 +1,5 @@
 import CustomErrorHandler from "../service/CustomErrorHandler";
-import { Product, TVProduct, Payment, User } from "../Models";
+import { Product, TVProduct, Payment, User, Notification } from "../Models";
 
 const productController = {
   //insert tv/movie
@@ -174,6 +174,41 @@ const productController = {
 
       res.status(201).json({ message: "Favorite updated successfully" });
     } catch (err) {
+      return next(err);
+    }
+  },
+
+  async notifiction(req, res, next) {
+    const { id, status, type, releaseDate } = req.body;
+
+    try {
+      let product;
+
+      if (type === "movie") {
+        product = await Product.findOne({ id: id });
+      } else {
+        product = await TVProduct.findOne({ id: id });
+      }
+
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      const existingNotification = await Notification.findOne({ productId: id });
+
+      if (status === true || status === "true") {
+        if (existingNotification) {
+          return res.status(200).json({ message: "ID already exists, cannot push" });
+        }
+        // Push the entire product object onto the Notification model
+        await Notification.create({ ...product._doc, productId: id, releaseDate: releaseDate });
+      } else {
+        // Remove from Notification model
+        await Notification.deleteOne({ productId: id });
+      }
+
+      res.status(201).json({ message: "Notification updated successfully" });
+    } catch (err) {
+      console.log('err', err)
       return next(err);
     }
   },
@@ -385,6 +420,21 @@ const productController = {
       documents = await Payment.find()
         .select("-updatedAt -__v -createdAt")
         .sort({ id: -1 });
+    } catch (err) {
+      return next(CustomErrorHandler.serverError());
+    }
+    return res.json(documents);
+  },
+  async getMovielength(req, res, next) {
+    let documents = {
+      movies: 0,
+      tVshow: 0
+    };
+    try {
+      const movies = await Product.find();
+      const tvShows = await TVProduct.find();
+      documents.movies = movies.length;
+      documents.tVshow = tvShows.length;
     } catch (err) {
       return next(CustomErrorHandler.serverError());
     }

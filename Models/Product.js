@@ -48,18 +48,20 @@ const tvProductSchema = new Schema(
 // Second Product Schema (TVProduct)
 const payment = new Schema(
   {
-      name:{ type: String },
-      plan:{ type: String, required: true },
-      application:{ type: String },
-      trationId:{ type: String },
-      status:{ type: String, default: false },
-      email:{ type: String, required: true },
-      cardNumber:{ type: String },
-      expiration:{ type: String },
-      cvv:{ type: String },
+    name: { type: String },
+    plan: { type: String, required: true },
+    application: { type: String },
+    trationId: { type: String },
+    status: { type: String, default: false },
+    email: { type: String, required: true },
+    cardNumber: { type: String },
+    expiration: { type: String },
+    cvv: { type: String },
   },
   { timestamps: true, toJSON: { getters: true }, id: false }
 );
+
+const Notification = new mongoose.model('Notification', new mongoose.Schema({}, { strict: false })); // Set strict option to false
 
 const Product = mongoose.model("Product", productSchema, "products");
 const TVProduct = mongoose.model("TVProduct", tvProductSchema, "tvproduct");
@@ -89,4 +91,5 @@ export {
   Movie_Genre,
   TVPopular,
   Trending,
+  Notification
 };

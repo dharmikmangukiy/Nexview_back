@@ -5,7 +5,7 @@ import { LoginToken } from "../../Models/LoginToken"; // Assuming LoginToken mod
 import CustomErrorHandler from "../../service/CustomErrorHandler";
 
 const loginController = {
-  
+
   async login(req, res, next) {
     // Validation
     const loginSchema = Joi.object({
