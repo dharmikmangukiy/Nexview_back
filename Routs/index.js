@@ -29,6 +29,7 @@ router.get("/discover/movie", productController.index);
 router.get("/discover/tv", productController.indexTV);
 router.get("/payment", productController.getPayment);
 router.get("/payment-length", productController.getMovielength);
+router.get("/notification", productController.getnotification);
 //get one
 router.get("/movie/:id", productController.show);
 router.get("/tv/:id", productController.TVshow);

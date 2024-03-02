@@ -5,11 +5,11 @@ import http from "http";
 import errorHandler from "./Middlewer/errorHandling";
 import mongoose from "mongoose";
 import welcome from "./Routs/WelcomeRout";
-import socketIo from 'socket.io'; // Import socket.io directly
-
+import socketIo from 'socket.io';
 import cors from 'cors';
 import { Notification, Product, TVProduct } from "./Models";
 
+const routers = express.Router();
 const app = express();
 
 // Database connection
@@ -17,11 +17,10 @@ mongoose.connect(DB_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
-});
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
+}).then(() => {
   console.log("DB connected...");
+}).catch((error) => {
+  console.error("Error connecting to DB:", error);
 });
 
 app.use(express.json());
@@ -61,16 +60,14 @@ app.post('/notification', async (req, res) => {
 
     if (status === true || status === "true") {
       if (existingNotification) {
-        return res.status(200).json({ message: "ID already exists, cannot push" });
+        return res.status(200).json({ message: "Notification already exists" });
       }
-      // Push the entire product object onto the Notification model
       await Notification.create({ ...product._doc, productId: id, releaseDate: releaseDate });
-
-      // Emit a 'product' event to all connected clients
-      io.emit('product', { ...product._doc, productId: id, releaseDate: releaseDate });
+      io.emit('product', { ...product._doc, productId: id, releaseDate: releaseDate, keyStatus: status });
     } else {
-      // Remove from Notification model
       await Notification.deleteOne({ productId: id });
+      io.emit('product', { ...product._doc, productId: id, releaseDate: releaseDate, keyStatus: status });
+      io.emit('productDeleted', id); // Emit an event indicating product deletion
     }
 
     res.status(201).json({ message: "Notification updated successfully" });
@@ -80,9 +77,10 @@ app.post('/notification', async (req, res) => {
   }
 });
 
-server.listen(APP_PORT, () =>
-  console.log(`Server listening on Port...${APP_PORT}.`)
-);
+
+server.listen(APP_PORT, () => {
+  console.log(`Server listening on Port ${APP_PORT}...`);
+});
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);

@@ -1,5 +1,5 @@
 import CustomErrorHandler from "../service/CustomErrorHandler";
-import { Product, TVProduct, Payment, User } from "../Models";
+import { Product, TVProduct, Payment, User, Notification } from "../Models";
 const productController = {
   //insert tv/movie
   async store(req, res, next) {
@@ -403,6 +403,15 @@ const productController = {
       return next(CustomErrorHandler.serverError());
     }
     return res.json(documents);
+  },
+  async getnotification(req, res, next) {
+    let movies = []
+    try {
+      movies = await Notification.find();
+    } catch (err) {
+      return next(CustomErrorHandler.serverError());
+    }
+    return res.json(movies);
   },
 
   //perticular movie/tv
