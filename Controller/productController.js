@@ -102,6 +102,9 @@ const productController = {
       token
     } = req.body;
     const userLoginData = await LoginToken.findOne({ token: token });
+    if (userLoginData === null) {
+      return next(CustomErrorHandler.userNotFound());
+    }
     const { email } = userLoginData;
     const status = false;
     try {
@@ -110,7 +113,10 @@ const productController = {
       if (!user) {
         return next(CustomErrorHandler.userNotFound());
       }
-
+      const paymentUser = await Payment.findOne({ email: email });
+      if (paymentUser) {
+        return next(CustomErrorHandler.paymentFound());
+      }
       // If the user exists, proceed with saving the payment information
       const document = await Payment.create({
         name,
@@ -138,6 +144,9 @@ const productController = {
       type
     } = req.body;
     const userLoginData = await LoginToken.findOne({ token: token });
+    if (userLoginData === null) {
+      return next(CustomErrorHandler.userNotFound());
+    }
     const { email } = userLoginData;
     try {
       // Check if the email exists in the User model

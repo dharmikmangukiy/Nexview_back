@@ -22,6 +22,9 @@ class CustomErrorHandler extends Error {
   static productNotFound(message = "Id not found") {
     return new CustomErrorHandler(200, message);
   }
+  static paymentFound(message = "Payment already exists.") {
+    return new CustomErrorHandler(200, message);
+  }
 
   static serverError(message = "Internal server error") {
     return new CustomErrorHandler(500, message);
