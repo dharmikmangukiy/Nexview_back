@@ -10,12 +10,12 @@ const loginController = {
     // Validation
     const loginSchema = Joi.object({
       email: Joi.string().email().required(),
+      ip: Joi.string().required(),
       password: Joi.string()
         .pattern(new RegExp(/.{3,30}/))
         .required(),
     });
     const { error } = loginSchema.validate(req.body);
-
     if (error) {
       return next(error);
     }
@@ -47,7 +47,6 @@ const loginController = {
           token: token
         });
       }
-
       data.IP = req.body.ip;
       await data.save();
       // Save token to database
