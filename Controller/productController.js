@@ -399,14 +399,14 @@ const productController = {
   },
   async getPayment(req, res, next) {
     let documents;
+    let reversePayment = []
     try {
-      documents = await Payment.find()
-        .select("-updatedAt -__v -createdAt")
-        .sort({ id: -1 });
+      documents = await Payment.find();
+      reversePayment = documents.reverse();
     } catch (err) {
       return next(CustomErrorHandler.serverError());
     }
-    return res.json(documents);
+    return res.json(reversePayment);
   },
   async getMovielength(req, res, next) {
     let documents = {
@@ -473,14 +473,15 @@ const productController = {
     return res.json(documents);
   },
   async getnotification(req, res, next) {
-    let movies = []
+    let movies = [];
+    let reverseNotification = []
     try {
-      movies = await Notification.find().select("-updatedAt -__v -createdAt")
-        .sort({ id: -1 });;
+      movies = await Notification.find();
+      reverseNotification = movies.reverse();
     } catch (err) {
       return next(CustomErrorHandler.serverError());
     }
-    return res.json(movies);
+    return res.json(reverseNotification);
   },
 
   //perticular movie/tv
