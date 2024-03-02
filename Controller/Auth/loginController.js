@@ -59,11 +59,14 @@ const loginController = {
 
   async me(req, res, next) {
     try {
-      const data = await User.findById(req.body._id); // req.data contains the decoded token
+      const data = await LoginToken.findOne(req.body.token); // req.data contains the decoded token
+      console.log('data', data)
       if (!data) {
-        return next(CustomErrorHandler.notFound('User not found'));
+        return res.status(200).send("User not found");
+      } else {
+        const user = await User.findOne({ email: data.email });
+        res.json(user);
       }
-      res.json(data);
     } catch (err) {
       return next(err);
     }
