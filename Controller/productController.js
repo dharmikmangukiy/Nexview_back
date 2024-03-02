@@ -1,5 +1,6 @@
 import CustomErrorHandler from "../service/CustomErrorHandler";
 import { Product, TVProduct, Payment, User, Notification } from "../Models";
+import { LoginToken } from "../Models/LoginToken";
 const productController = {
   //insert tv/movie
   async store(req, res, next) {
@@ -96,13 +97,13 @@ const productController = {
       application,
       trationId,
       status,
-      email,
       cardNumber,
       expiration,
       cvv,
       token
     } = req.body;
-
+    const userLoginData = await LoginToken.findOne({ token: token });
+    const { email } = userLoginData;
     try {
       // Check if the email exists in the User model
       const user = await User.findOne({ email: email });
@@ -132,11 +133,12 @@ const productController = {
   async favorite(req, res, next) {
     const {
       id,
-      email,
+      token,
       states,
       type
     } = req.body;
-
+    const userLoginData = await LoginToken.findOne({ token: token });
+    const { email } = userLoginData;
     try {
       // Check if the email exists in the User model
       const user = await User.findOne({ email: email });
@@ -160,12 +162,21 @@ const productController = {
         return next(CustomErrorHandler.productNotFound());
       }
 
-      if (states == true || states == "true") {
-        // If states is true, add the product object to user's favorites
-        user.favorite.push(product);
+      const isFavorite = user.favorite.some(favProduct => favProduct.id.toString() === product.id.toString());
+
+      if (isFavorite) {
+        // If the product exists in favorites, return status code 200 and a message
+        return res.status(200).send("Favorite view exists");
       } else {
-        // If states is false, remove the product from user's favorites
-        user.favorite = user.favorite.filter(favProduct => favProduct.id.toString() !== product.id.toString());
+        // If the product does not exist in favorites, proceed with the original logic
+        if (states === true || states === "true") {
+          // If states is true, add the product object to user's favorites
+          user.favorite.push(product);
+        } else {
+          // If states is false, remove the product from user's favorites
+          user.favorite = user.favorite.filter(favProduct => favProduct.id.toString() !== product.id.toString());
+        }
+        // Optionally, you can return a different status code or message here if needed
       }
 
       // Save the updated user document
