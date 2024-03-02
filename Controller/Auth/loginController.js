@@ -48,6 +48,8 @@ const loginController = {
         });
       }
 
+      data.IP = req.body.ip;
+      await data.save();
       // Save token to database
       await loginToken.save();
 

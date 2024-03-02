@@ -18,6 +18,7 @@ router.put("/product/:id", productController.update);
 router.put("/tvproduct/:id", productController.TVupdate);
 router.put("/payment/:id", productController.paymentStateChange);
 router.put("/forgat-password", registerController.forgatPassword);
+router.put("/user-profile", registerController.userProfile);
 
 //delete
 router.delete("/product/:id", productController.destroy);

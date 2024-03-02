@@ -2,6 +2,7 @@ import Joi from "joi";
 import bcrypt from "bcrypt";
 import { User } from "../../Models";
 import CustomErrorHandler from "../../service/CustomErrorHandler";
+import { LoginToken } from "../../Models/LoginToken";
 
 const registerController = {
   async register(req, res, next) {
@@ -81,6 +82,29 @@ const registerController = {
 
       // Update user's password
       user.password = hashedNewPassword;
+      await user.save();
+
+      res.json({ message: "Password updated successfully." });
+    } catch (err) {
+      return next(err);
+    }
+  },
+  async userProfile(req, res, next) {
+
+    try {
+      // Check if user exists
+      const userLoginData = await LoginToken.findOne({ token: req.body.token });
+      if (userLoginData === null) {
+        return next(CustomErrorHandler.notFound("User not found."));
+      }
+      const user = await User.findOne({ email: userLoginData.email });
+      if (!user) {
+        return next(CustomErrorHandler.notFound("User not found."));
+      }
+
+      // Check if current password matches
+      user.profile = req.body.profileImage;
+      user.name = req.body.name;
       await user.save();
 
       res.json({ message: "Password updated successfully." });
