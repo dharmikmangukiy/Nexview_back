@@ -96,7 +96,6 @@ const productController = {
       plan,
       application,
       trationId,
-      status,
       cardNumber,
       expiration,
       cvv,
@@ -104,6 +103,7 @@ const productController = {
     } = req.body;
     const userLoginData = await LoginToken.findOne({ token: token });
     const { email } = userLoginData;
+    const status = false;
     try {
       // Check if the email exists in the User model
       const user = await User.findOne({ email: email });
