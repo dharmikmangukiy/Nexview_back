@@ -112,6 +112,28 @@ const registerController = {
       return next(err);
     }
   },
+  async freePlan(req, res, next) {
+
+    try {
+      // Check if user exists
+      const userLoginData = await LoginToken.findOne({ token: req.body.token });
+      if (userLoginData === null) {
+        return next(CustomErrorHandler.notFound("User not found."));
+      }
+      const user = await User.findOne({ email: userLoginData.email });
+      if (!user) {
+        return next(CustomErrorHandler.notFound("User not found."));
+      }
+
+      // Check if current password matches
+      user.type = req.body.type;
+      await user.save();
+
+      res.json({ message: "User Converted  to Free Plan Successfully" });
+    } catch (err) {
+      return next(err);
+    }
+  },
 };
 
 export default registerController;
