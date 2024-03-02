@@ -406,7 +406,7 @@ const productController = {
     let reverseUser = []
     // pagination mongoose-pagination
     try {
-      documents = await User.find({ type: 'prime user' }); // Filtering documents
+      documents = await User.find({ type: 'prime user', role: 'customer' }); // Filtering documents
       reverseUser = documents.reverse();
     } catch (err) {
       return next(CustomErrorHandler.serverError());
@@ -429,7 +429,7 @@ const productController = {
     let documents;
     // pagination mongoose-pagination
     try {
-      documents = await User.find({ type: { $ne: 'prime user' } }); // Filtering documents
+      documents = await User.find({ type: { $ne: 'prime user', role: 'customer' } }); // Filtering documents
     } catch (err) {
       return next(CustomErrorHandler.serverError());
     }
