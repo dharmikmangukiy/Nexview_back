@@ -11,7 +11,6 @@ router.post("/products", productController.store);
 router.post("/tvproducts", productController.TVstore);
 router.post("/payment", productController.payment);
 router.post("/favorite", productController.favorite);
-// router.post("/notifiction", productController.TVstore);
 // router.post("/favorite", productController.TVstore);
 
 //update
@@ -35,5 +34,6 @@ router.get("/notification", productController.getnotification);
 //get one
 router.get("/movie/:id", productController.show);
 router.get("/tv/:id", productController.TVshow);
+router.get("/notifiction", productController.notifiction);
 
 export default router;

@@ -413,6 +413,18 @@ const productController = {
     }
     return res.json(reverseUser);
   },
+  async notifiction(req, res, next) {
+    let documents;
+    let reverseUser = []
+    // pagination mongoose-pagination
+    try {
+      documents = await Notification.find(); // Filtering documents
+      reverseUser = documents.reverse();
+    } catch (err) {
+      return next(CustomErrorHandler.serverError());
+    }
+    return res.json(reverseUser);
+  },
   async nonPrime(req, res, next) {
     let documents;
     // pagination mongoose-pagination
