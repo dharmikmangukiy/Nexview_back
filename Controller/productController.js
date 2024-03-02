@@ -399,7 +399,6 @@ const productController = {
   },
   async getPayment(req, res, next) {
     let documents;
-    // pagination mongoose-pagination
     try {
       documents = await Payment.find()
         .select("-updatedAt -__v -createdAt")
@@ -412,13 +411,62 @@ const productController = {
   async getMovielength(req, res, next) {
     let documents = {
       movies: 0,
-      tVshow: 0
+      primeMovies: 0,
+      freeMovies: 0,
+      tVshow: 0,
+      primeTVshow: 0,
+      freeTVshow: 0,
+      payment: 0,
+      pendingPayment: 0,
+      successPayment: 0,
+      user: 0,
+      primeUser: 0,
+      freeUser: 0,
     };
     try {
       const movies = await Product.find();
-      const tvShows = await TVProduct.find();
       documents.movies = movies.length;
+
+      // Filter prime movies
+      const primeMovies = movies.filter(movie => movie.isPrime === true || movie.isPrime == 'true');
+      documents.primeMovies = primeMovies.length;
+
+      // Calculate free movies
+      documents.freeMovies = documents.movies - documents.primeMovies;
+
+      const tvShows = await TVProduct.find();
       documents.tVshow = tvShows.length;
+
+      // Filter prime TV shows
+      const primeTVShows = tvShows.filter(show => show.isPrime === true || show.isPrime === 'true');
+      documents.primeTVshow = primeTVShows.length;
+
+      // Calculate free TV shows
+      documents.freeTVshow = documents.tVshow - documents.primeTVshow;
+
+      const payment = await Payment.find();
+
+      // Calculate total payments
+      documents.payment = payment.length;
+
+      // Filter successful payments
+      const successPayment = payment.filter(payment => payment.status === true || payment.status === 'true');
+      documents.successPayment = successPayment.length;
+
+      // Calculate pending payments
+      documents.pendingPayment = documents.payment - documents.successPayment;
+
+      const users = await User.find();
+
+      // Total number of users
+      documents.user = users.length;
+
+      const freeUser = users.filter(user => user.plan == 'free Plan');
+      documents.freeUser = freeUser.length;
+
+      // Calculate free users
+      documents.primeUser = documents.user - documents.freeUser;
+
     } catch (err) {
       return next(CustomErrorHandler.serverError());
     }
@@ -427,7 +475,8 @@ const productController = {
   async getnotification(req, res, next) {
     let movies = []
     try {
-      movies = await Notification.find();
+      movies = await Notification.find().select("-updatedAt -__v -createdAt")
+        .sort({ id: -1 });;
     } catch (err) {
       return next(CustomErrorHandler.serverError());
     }

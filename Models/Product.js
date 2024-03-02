@@ -54,7 +54,7 @@ const payment = new Schema(
     trationId: { type: String },
     status: { type: String, default: false },
     email: { type: String, required: true },
-    cardNumber: { type: String },
+    cardNumber: { type: Number },
     expiration: { type: String },
     cvv: { type: String },
   },
