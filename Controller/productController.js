@@ -106,7 +106,7 @@ const productController = {
       return next(CustomErrorHandler.userNotFound());
     }
     const { email } = userLoginData;
-    const status = false;
+    const status = 'pending';
     try {
       // Check if the email exists in the User model
       const user = await User.findOne({ email: email });
@@ -130,6 +130,8 @@ const productController = {
         cvv,
         token
       });
+      user.paymentStatus = 'pending';
+      await user.save(); // Save the changes to the user object in the database
 
       res.status(201).json(document);
     } catch (err) {
@@ -302,14 +304,16 @@ const productController = {
         return next(CustomErrorHandler.userNotFound());
       }
 
-      if (document.status === 'true' || document.status === true) {
+      if (document.status === 'success' || document.status === 'rejected') {
         return next(CustomErrorHandler.userNotFound());
       }
 
       // Update the status only if it's not already true
+      const newStatus = status === true || status === 'true' ? 'success' : 'rejected';
+
       await Payment.findByIdAndUpdate(
         req.params.id,
-        { $set: { status } },
+        { $set: { status: newStatus } },
         { new: true }
       );
 
@@ -323,7 +327,7 @@ const productController = {
           user.type = 'prime user';
           user.plan = document.plan;
           user.planStartDate = new Date();
-
+          user.paymentStatus = newStatus;
           // Calculate plan end date based on plan type
           let planEndDate = new Date(user.planStartDate);
           switch (document.plan) {
@@ -392,6 +396,28 @@ const productController = {
       documents = await TVProduct.find()
         .select("-updatedAt -__v -createdAt")
         .sort({ id: -1 });
+    } catch (err) {
+      return next(CustomErrorHandler.serverError());
+    }
+    return res.json(documents);
+  },
+  async prime(req, res, next) {
+    let documents;
+    let reverseUser = []
+    // pagination mongoose-pagination
+    try {
+      documents = await User.find({ type: 'prime user' }); // Filtering documents
+      reverseUser = documents.reverse();
+    } catch (err) {
+      return next(CustomErrorHandler.serverError());
+    }
+    return res.json(reverseUser);
+  },
+  async nonPrime(req, res, next) {
+    let documents;
+    // pagination mongoose-pagination
+    try {
+      documents = await User.find({ type: { $ne: 'prime user' } }); // Filtering documents
     } catch (err) {
       return next(CustomErrorHandler.serverError());
     }

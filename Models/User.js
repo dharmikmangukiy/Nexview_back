@@ -9,6 +9,7 @@ const userSchema = new Schema(
     role: { type: String, default: "customer" },
     type: { type: String, default: "new user" },
     plan: { type: String, default: "free Plan" },
+    paymentStatus: { type: String, default: null },
     paymentType: { type: String, },
     paymentTransactionId: { type: String },
     planStartDate: { type: String },
@@ -18,8 +19,8 @@ const userSchema = new Schema(
     init_vector: { type: String },
     face_descriptor: { type: String },
     timestamp: { type: Date, default: new Date() },
-    profile:{type: String},
-    favorite:{type: Array, default:[]}
+    profile: { type: String },
+    favorite: { type: Array, default: [] }
   },
   { timestamps: true }
 );

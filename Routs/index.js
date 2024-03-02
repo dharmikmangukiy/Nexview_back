@@ -27,6 +27,8 @@ router.delete("/tvproduct/:id", productController.TVdestroy);
 //get all
 router.get("/discover/movie", productController.index);
 router.get("/discover/tv", productController.indexTV);
+router.get("/user/prime", productController.prime);
+router.get("/user/nonPrime", productController.nonPrime);
 router.get("/payment", productController.getPayment);
 router.get("/payment-length", productController.getMovielength);
 router.get("/notification", productController.getnotification);
