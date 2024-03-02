@@ -403,15 +403,15 @@ const productController = {
   },
   async prime(req, res, next) {
     let documents;
-    let reverseUser = []
-    // pagination mongoose-pagination
+    let filteredUsers = [];
     try {
-      documents = await User.find({ type: 'prime user', role: 'customer' }); // Filtering documents
-      reverseUser = documents.reverse();
+      // Fetching documents with type 'prime user' and role 'customer'
+      documents = await User.find({ type: 'prime user', role: 'customer' });
+      filteredUsers = documents.reverse();
     } catch (err) {
       return next(CustomErrorHandler.serverError());
     }
-    return res.json(reverseUser);
+    return res.json(filteredUsers);
   },
   async notifiction(req, res, next) {
     let documents;
@@ -427,9 +427,9 @@ const productController = {
   },
   async nonPrime(req, res, next) {
     let documents;
-    // pagination mongoose-pagination
     try {
-      documents = await User.find({ type: { $ne: 'prime user', role: 'customer' } }); // Filtering documents
+      // Fetching documents with type other than 'prime user' and role 'customer'
+      documents = await User.find({ type: { $ne: 'prime user' }, role: 'customer' });
     } catch (err) {
       return next(CustomErrorHandler.serverError());
     }
