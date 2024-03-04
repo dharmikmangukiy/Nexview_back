@@ -3,51 +3,66 @@ import bcrypt from "bcrypt";
 import { User } from "../../Models";
 import CustomErrorHandler from "../../service/CustomErrorHandler";
 import { LoginToken } from "../../Models/LoginToken";
-
+const mimetypes = require("mime-types");
+const uuid = require("uuid");
+const jwt = require("jsonwebtoken");
+const fs = require("fs")
+const { euclideanDistance, manhattanDistance, encryptBiometrics, decryptBiometrics, getInitializationVector, generateEncryptionKey } = require("../../utils");
 const registerController = {
   async register(req, res, next) {
     // Validation
-    const registerSchema = Joi.object({
-      name: Joi.string().min(3).max(30).required(),
-      email: Joi.string().email().required(),
-      password: Joi.string()
-        .pattern(new RegExp(/.{3,30}/))
-        .required(),
-    });
-    const { error } = registerSchema.validate(req.body);
-    if (error) {
-      return next(error);
-    }
-    // check if user is in the database already
     try {
-      const exist = await User.exists({ email: req.body.email });
-      if (exist) {
-        return next(
-          CustomErrorHandler.alreadyExist("This email is already taken.")
-        );
+      const { name, email, password, screenshot, descriptor } = req.body
+
+      if (!(name && email && password && screenshot && descriptor)) {
+        return res.status(400).send('Dati mancanti.')
       }
+
+      if (!email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
+        return res.status(400).send('The EMAIL field is not in the standard form.')
+      }
+
+      const oldUser = await User.findOne({ email });
+      if (oldUser) {
+        return res.status(409).send('User already registered. Please log in.')
+      }
+
+      const mime = (screenshot.split(';')[0]).split(':')[1];
+      const ext = mimetypes.extension(mime);
+      const path = 'uploads/' + uuid.v4() + '.' + ext;
+      fs.writeFile(path, screenshot.split(',')[1], 'base64', (e) => {
+        if (e) {
+          console.log(e)
+          throw 'Unable to save file.'
+        }
+      })
+      const encryptedUserPassword = await bcrypt.hash(password, 10);
+      const namea = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+      const emaila = email.toLowerCase();
+      const user = await User.create({
+        name: namea,
+        email: emaila,
+        password: encryptedUserPassword,
+        image_src: path,
+        face_descriptor: descriptor
+      });
+      console.log('user', user);
+      const token = jwt.sign(
+        { user_id: user._id, email },
+        process.env.JWT_SECRET,
+        { expiresIn: '2h' }
+      )
+
+      return res.status(200).json({
+        name: user.name,
+        email: user.email,
+        screenshot: user.image_src,
+        registerPic: screenshot,
+        token
+      })
     } catch (err) {
       return next(err);
     }
-    const { name, email, password } = req.body;
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // prepare the model
-
-    const user = new User({
-      name,
-      email,
-      password: hashedPassword,
-    });
-    try {
-      const result = await user.save();
-      console.log(result);
-    } catch (err) {
-      return next(err);
-    }
-    res.json({ user });
   },
   async forgatPassword(req, res, next) {
     // Validation

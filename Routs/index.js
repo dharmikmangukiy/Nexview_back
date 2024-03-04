@@ -4,6 +4,7 @@ import { loginController, productController, registerController } from "../Contr
 const router = express.Router();
 router.post("/me", loginController.me);
 router.post("/login", loginController.login);
+router.post("/face-login", loginController.faceLogin);
 router.post("/register", registerController.register);
 
 //insert
