@@ -1,4 +1,5 @@
 import express from "express";
+import bodyParser from "body-parser"; // Import body-parser
 import { APP_PORT, DB_URL } from "./config";
 import routes from "./Routs";
 import http from "http";
@@ -9,7 +10,6 @@ import socketIo from 'socket.io';
 import cors from 'cors';
 import { Notification, Product, TVProduct } from "./Models";
 
-const routers = express.Router();
 const app = express();
 
 // Database connection
@@ -23,7 +23,7 @@ mongoose.connect(DB_URL, {
   console.error("Error connecting to DB:", error);
 });
 
-app.use(express.json({limit:'50mb'}));
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use(routes);
@@ -62,11 +62,11 @@ app.post('/notification', async (req, res) => {
       if (existingNotification) {
         return res.status(200).json({ message: "Notification already exists" });
       }
-      await Notification.create({ ...product._doc, productId: id, releaseDate: releaseDate });
-      io.emit('product', { ...product._doc, productId: id, releaseDate: releaseDate, keyStatus: status });
+      await Notification.create({ ...product._doc, productId: id, releaseDate: releaseDate, mediaType: type });
+      io.emit('product', { ...product._doc, productId: id, releaseDate: releaseDate, keyStatus: status, mediaType: type });
     } else {
       await Notification.deleteOne({ productId: id });
-      io.emit('product', { ...product._doc, productId: id, releaseDate: releaseDate, keyStatus: status });
+      io.emit('product', { ...product._doc, productId: id, releaseDate: releaseDate, keyStatus: status, mediaType: type });
       io.emit('productDeleted', id); // Emit an event indicating product deletion
     }
 
