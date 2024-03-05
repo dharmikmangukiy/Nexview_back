@@ -19,7 +19,7 @@ const userSchema = new Schema(
     init_vector: { type: String },
     face_descriptor: { type: String },
     timestamp: { type: Date, default: new Date() },
-    profile: { type: String },
+    profile: { type: Schema.Types.Mixed },
     favorite: { type: Array, default: [] }
   },
   { timestamps: true }

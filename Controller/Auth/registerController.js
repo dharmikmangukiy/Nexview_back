@@ -107,7 +107,7 @@ const registerController = {
       user.name = req.body.name;
       await user.save();
 
-      res.json({ message: "Password updated successfully." });
+      res.json({ message: "Profile updated successfully." });
     } catch (err) {
       return next(err);
     }
