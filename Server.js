@@ -41,7 +41,7 @@ const io = socketIo(server, {
 });
 
 app.post('/notification', async (req, res) => {
-  const { id, status, type, releaseDate } = req.body;
+  const { id, status, type, } = req.body;
 
   try {
     let product;
@@ -62,11 +62,11 @@ app.post('/notification', async (req, res) => {
       if (existingNotification) {
         return res.status(200).json({ message: "Notification already exists" });
       }
-      await Notification.create({ ...product._doc, productId: id, releaseDate: releaseDate, mediaType: type });
-      io.emit('product', { ...product._doc, productId: id, releaseDate: releaseDate, keyStatus: status, mediaType: type });
+      await Notification.create({ ...product._doc, productId: id, mediaType: type });
+      io.emit('product', { ...product._doc, productId: id, keyStatus: status, mediaType: type });
     } else {
       await Notification.deleteOne({ productId: id });
-      io.emit('product', { ...product._doc, productId: id, releaseDate: releaseDate, keyStatus: status, mediaType: type });
+      io.emit('product', { ...product._doc, productId: id, keyStatus: status, mediaType: type });
       io.emit('productDeleted', id); // Emit an event indicating product deletion
     }
 
