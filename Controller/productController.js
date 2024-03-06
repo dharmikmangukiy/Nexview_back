@@ -169,10 +169,12 @@ const productController = {
         product = await TVProduct.findOne({ id: id });
       }
 
+      // Check if product is null or undefined
       if (!product) {
         return next(CustomErrorHandler.productNotFound());
       }
 
+      // Now you can proceed with the logic
       const isFavorite = user.favorite.some(favProduct => favProduct.id.toString() === product.id.toString());
 
       if (isFavorite) {
