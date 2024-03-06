@@ -182,8 +182,7 @@ const productController = {
         // If the product does not exist in favorites, proceed with the original logic
         if (states === true || states === "true") {
           // If states is true, add the product object to user's favorites
-          product.mediaType = type;
-          user.favorite.push(product);
+          user.favorite.push({ ...product, mediaType: type });
         } else {
           // If states is false, remove the product from user's favorites
           user.favorite = user.favorite.filter(favProduct => favProduct.id.toString() !== product.id.toString());

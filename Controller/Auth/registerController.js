@@ -65,21 +65,12 @@ const registerController = {
     }
   },
   async forgatPassword(req, res, next) {
-    // Validation
-    const forgotPasswordSchema = Joi.object({
-      email: Joi.string().email().required(),
-      password: Joi.string().pattern(new RegExp(/.{3,30}/)).required(),
-      newPassword: Joi.string().pattern(new RegExp(/.{3,30}/)).required(), // Add newPassword validation
-    });
-
-    const { error } = forgotPasswordSchema.validate(req.body);
-    if (error) {
-      return next(error);
-    }
-
-    const { email, password, newPassword } = req.body;
+    const { email, otp, newPassword } = req.body;
 
     try {
+      if (otp === '0000') {
+        return next(CustomErrorHandler.notFound("OTP Not Valid."));
+      }
       // Check if user exists
       const user = await User.findOne({ email });
       if (!user) {
