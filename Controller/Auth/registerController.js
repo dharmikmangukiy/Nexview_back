@@ -83,10 +83,10 @@ const registerController = {
     }
   },
   async forgatPassword(req, res, next) {
-    const { email, otp, newPassword } = req.body;
+    const { email, otp, password } = req.body;
 
     try {
-      if (otp === '0000') {
+      if (otp !== '0000') {
         return next(CustomErrorHandler.notFound());
       }
       // Check if user exists
@@ -95,14 +95,8 @@ const registerController = {
         return next(CustomErrorHandler.userNotFound());
       }
 
-      // Check if current password matches
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return next(CustomErrorHandler.unauthorized());
-      }
-
-      // Hash newPassword
-      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      // Hash password
+      const hashedNewPassword = await bcrypt.hash(password, 10);
 
       // Update user's password
       user.password = hashedNewPassword;
