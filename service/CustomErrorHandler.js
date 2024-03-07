@@ -19,6 +19,9 @@ class CustomErrorHandler extends Error {
   static userNotFound(message = "User Not Found") {
     return new CustomErrorHandler(200, message);
   }
+  static notFound(message = "OTP Not Valid.") {
+    return new CustomErrorHandler(200, message);
+  }
   static productNotFound(message = "Id not found") {
     return new CustomErrorHandler(200, message);
   }

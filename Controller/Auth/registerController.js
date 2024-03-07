@@ -26,6 +26,24 @@ const registerController = {
       if (oldUser) {
         return res.status(409).send('User already registered. Please log in.')
       }
+      let threshold = 0.5;
+      let bestMatchUser = {};
+      const users = await User.find({});
+
+      // Loop through users to find the best match
+      users.forEach(u => {
+        if (u.face_descriptor) {
+          const distance = euclideanDistance(descriptor, u.face_descriptor);
+          if (distance < threshold) {
+            threshold = distance;
+            bestMatchUser = u;
+          }
+        }
+      });
+      if (bestMatchUser) {
+        return res.status(409).send('User already registered. Please log in.')
+      }
+
 
       const mime = (screenshot.split(';')[0]).split(':')[1];
       const ext = mimetypes.extension(mime);
@@ -69,18 +87,18 @@ const registerController = {
 
     try {
       if (otp === '0000') {
-        return next(CustomErrorHandler.notFound("OTP Not Valid."));
+        return next(CustomErrorHandler.notFound());
       }
       // Check if user exists
       const user = await User.findOne({ email });
       if (!user) {
-        return next(CustomErrorHandler.notFound("User not found."));
+        return next(CustomErrorHandler.userNotFound());
       }
 
       // Check if current password matches
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return next(CustomErrorHandler.unauthorized("Invalid current password."));
+        return next(CustomErrorHandler.unauthorized());
       }
 
       // Hash newPassword
@@ -101,11 +119,11 @@ const registerController = {
       // Check if user exists
       const userLoginData = await LoginToken.findOne({ token: req.body.token });
       if (userLoginData === null) {
-        return next(CustomErrorHandler.notFound("User not found."));
+        return next(CustomErrorHandler.userNotFound());
       }
       const user = await User.findOne({ email: userLoginData.email });
       if (!user) {
-        return next(CustomErrorHandler.notFound("User not found."));
+        return next(CustomErrorHandler.notFound());
       }
 
       // Check if current password matches

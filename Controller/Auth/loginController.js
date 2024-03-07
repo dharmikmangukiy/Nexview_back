@@ -73,7 +73,6 @@ const loginController = {
   },
   async faceLogin(req, res, next) {
     // Validation
-    req.body.ip = '1234567'; // Example IP address
 
     try {
       // Validate request body
