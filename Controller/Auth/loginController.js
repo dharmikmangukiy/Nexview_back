@@ -64,7 +64,6 @@ const loginController = {
       await data.save();
       // Save token to database
       await loginToken.save();
-      console.log('data',data);
       res.json({ data, token }); // Return user and token
     } catch (err) {
       return next(err);
@@ -129,7 +128,6 @@ const loginController = {
   
       // Save token to database
       await loginToken.save();
-      console.log('user, token',user, token)
       // Return user data and token
       res.json({ user, token });
     }  catch (err) {

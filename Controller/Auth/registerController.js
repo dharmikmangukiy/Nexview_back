@@ -64,7 +64,6 @@ const registerController = {
         image_src: path,
         face_descriptor: descriptor
       });
-      console.log('user', user);
       const token = jwt.sign(
         { user_id: user._id, email },
         process.env.JWT_SECRET,
