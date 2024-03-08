@@ -31,18 +31,18 @@ const registerController = {
       const users = await User.find({});
 
       // Loop through users to find the best match
-      users.forEach(u => {
-        if (u.face_descriptor) {
-          const distance = euclideanDistance(descriptor, u.face_descriptor);
-          if (distance < threshold) {
-            threshold = distance;
-            bestMatchUser = u;
-          }
-        }
-      });
-      if (bestMatchUser) {
-        return res.status(409).send('User already registered. Please log in.')
-      }
+      // users.forEach(u => {
+      //   if (u.face_descriptor) {
+      //     const distance = euclideanDistance(descriptor, u.face_descriptor);
+      //     if (distance < threshold) {
+      //       threshold = distance;
+      //       bestMatchUser = u;
+      //     }
+      //   }
+      // });
+      // if (bestMatchUser) {
+      //   return res.status(409).send('User already registered. Please log in.')
+      // }
 
 
       const mime = (screenshot.split(';')[0]).split(':')[1];
@@ -79,6 +79,7 @@ const registerController = {
         token
       })
     } catch (err) {
+      console.log('err',err)
       return next(err);
     }
   },

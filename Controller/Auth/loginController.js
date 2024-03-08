@@ -17,7 +17,6 @@ async function generateToken() {
   return token;
 }
 
-
 const loginController = {
 
   async login(req, res, next) {
@@ -65,7 +64,7 @@ const loginController = {
       await data.save();
       // Save token to database
       await loginToken.save();
-
+      console.log('data',data);
       res.json({ data, token }); // Return user and token
     } catch (err) {
       return next(err);
@@ -77,15 +76,15 @@ const loginController = {
     try {
       // Validate request body
       const { descriptor, ip } = req.body;
-      if (!descriptor) {
-        return res.status(400).send('Descriptor is missing.');
+      if (!descriptor || !ip) {
+        return res.status(400).json({ error: 'Descriptor or IP is missing.' });
       }
-
+  
       // Find all users
       const users = await User.find({});
       let threshold = 0.5;
-      let bestMatchUser = {};
-
+      let bestMatchUser = null;
+  
       // Loop through users to find the best match
       users.forEach(u => {
         if (u.face_descriptor) {
@@ -96,45 +95,44 @@ const loginController = {
           }
         }
       });
-
+  
       // If no match found
-      if (Object.keys(bestMatchUser).length === 0) {
-        return res.status(200).send('It was not possible to associate the image inserted with the one registered. Insert a new image.');
+      if (!bestMatchUser) {
+        return res.status(404).json({ error: 'No user found for the provided descriptor.' });
       }
-
+  
       // Find user by email
-      const data = await User.findOne({ email: bestMatchUser.email });
-      if (!data) {
-        return next(CustomErrorHandler.wrongCredentials());
+      const user = await User.findOne({ email: bestMatchUser.email });
+      if (!user) {
+        return res.status(404).json({ error: 'User not found.' });
       }
-
+  
       // Generate token
       const token = await generateToken();
-      console.log('data', data)
+  
+      // Save IP address to user
+      user.IP = ip;
+      await user.save();
+  
       // Check if token exists for the email
-      let loginToken = await LoginToken.findOne({ email: data.email });
-      console.log('loginToken', loginToken)
+      let loginToken = await LoginToken.findOne({ email: user.email });
       if (loginToken) {
         // If token exists, update it
         loginToken.token = token;
       } else {
         // If token does not exist, create a new entry
         loginToken = new LoginToken({
-          email: data.email,
+          email: user.email,
           token: token
         });
       }
-
-      // Save IP address to user
-      data.IP = ip;
-      await data.save();
-
+  
       // Save token to database
       await loginToken.save();
-
+      console.log('user, token',user, token)
       // Return user data and token
-      res.json({ data, token });
-    } catch (err) {
+      res.json({ user, token });
+    }  catch (err) {
       console.log('err', err)
       return next(err);
     }
