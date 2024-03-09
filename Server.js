@@ -66,7 +66,6 @@ app.post('/notification', async (req, res) => {
       io.emit('product', { ...product._doc, productId: id, keyStatus: status, mediaType: type });
     } else {
       await Notification.deleteOne({ productId: id });
-      io.emit('product', { ...product._doc, productId: id, keyStatus: status, mediaType: type });
       io.emit('productDeleted', id); // Emit an event indicating product deletion
     }
 
