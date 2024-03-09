@@ -113,10 +113,6 @@ const productController = {
       if (!user) {
         return next(CustomErrorHandler.userNotFound());
       }
-      const paymentUser = await Payment.findOne({ email: email });
-      if (paymentUser) {
-        return next(CustomErrorHandler.paymentFound());
-      }
       // If the user exists, proceed with saving the payment information
       const document = await Payment.create({
         name,
