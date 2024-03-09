@@ -359,8 +359,10 @@ const productController = {
         user.type = 'new user';
         user.plan = 'free Plan';
         user.planStartDate = null;
+        user.planEndDate = null;
         user.paymentStatus = null;
-        user.paymentStatus = null;
+        await user.save();
+
       }
 
       res.status(200).json(document);
