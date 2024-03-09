@@ -490,7 +490,7 @@ const productController = {
       documents.payment = payment.length;
 
       // Filter successful payments
-      const successPayment = payment.filter(payment => payment.status === true || payment.status === 'true');
+      const successPayment = payment.filter(payment => payment.status === true || payment.status === 'success');
       documents.successPayment = successPayment.length;
 
       // Calculate pending payments
