@@ -306,9 +306,9 @@ const productController = {
         return next(CustomErrorHandler.userNotFound());
       }
 
-      if (document.status === 'success' || document.status === 'rejected') {
-        return next(CustomErrorHandler.userNotFound());
-      }
+      // if (document.status === 'success' || document.status === 'rejected') {
+      //   return next(CustomErrorHandler.userNotFound());
+      // }
 
       // Update the status only if it's not already true
       const newStatus = status === true || status === 'true' ? 'success' : 'rejected';
@@ -333,23 +333,23 @@ const productController = {
           // Calculate plan end date based on plan type
           let planEndDate = new Date(user.planStartDate);
           switch (document.plan) {
-            case "premium":
+            case "Premium":
               planEndDate.setFullYear(planEndDate.getFullYear() + 1);
               break;
-            case "standard":
+            case "Standard":
               planEndDate.setMonth(planEndDate.getMonth() + 6);
               break;
-            case "basic":
+            case "Basic":
               planEndDate.setMonth(planEndDate.getMonth() + 3);
               break;
-            case "mobile":
+            case "Mobile":
               planEndDate.setMonth(planEndDate.getMonth() + 1);
               break;
             default:
               // Handle unsupported plan types
               break;
           }
-
+          console.log('planEndDate',planEndDate)
           user.planEndDate = planEndDate;
 
           await user.save();
