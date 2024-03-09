@@ -349,7 +349,6 @@ const productController = {
               // Handle unsupported plan types
               break;
           }
-          console.log('planEndDate',planEndDate)
           user.planEndDate = planEndDate;
 
           await user.save();
