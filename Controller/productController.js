@@ -161,7 +161,7 @@ const productController = {
       if (!user.favorite) {
         user.favorite = [];
       }
-
+      
       let product = null;
       if (type === "movie") {
         product = await Product.findOne({ id: id });
@@ -175,19 +175,18 @@ const productController = {
       }
 
       // Now you can proceed with the logic
-      const isFavorite = user.favorite.some(favProduct => favProduct.id.toString() === product.id.toString());
-
-      if (isFavorite) {
+      const isFavorite = user.favorite.some(favProduct => favProduct.id == product.id);
+      if (isFavorite && (states === true || states === "true")) {
         // If the product exists in favorites, return status code 200 and a message
         return res.status(200).send("Favorite view exists");
       } else {
         // If the product does not exist in favorites, proceed with the original logic
         if (states === true || states === "true") {
           // If states is true, add the product object to user's favorites
-          user.favorite.push({ ...product, mediaType: type });
+          user.favorite.push({ ...product._doc, mediaType: type });
         } else {
           // If states is false, remove the product from user's favorites
-          user.favorite = user.favorite.filter(favProduct => favProduct.id.toString() !== product.id.toString());
+          user.favorite = user.favorite.filter(favProduct => favProduct.id != product.id);
         }
         // Optionally, you can return a different status code or message here if needed
       }
@@ -197,6 +196,7 @@ const productController = {
 
       res.status(201).json({ message: "Favorite updated successfully" });
     } catch (err) {
+      console.log('err',err)
       return next(err);
     }
   },
