@@ -319,8 +319,8 @@ const productController = {
         { new: true }
       );
 
+      const user = await User.findOne({ email: document.email });
       if (status === true || status === 'true') {
-        const user = await User.findOne({ email: document.email });
 
         if (user) {
           // Update user's information based on payment document
@@ -353,6 +353,14 @@ const productController = {
 
           await user.save();
         }
+      }else {
+        user.paymentType = null;
+        user.paymentTransactionId = null;
+        user.type = 'new user';
+        user.plan = 'free Plan';
+        user.planStartDate = null;
+        user.paymentStatus = null;
+        user.paymentStatus = null;
       }
 
       res.status(200).json(document);
