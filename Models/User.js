@@ -15,7 +15,6 @@ const userSchema = new Schema(
     planStartDate: { type: String },
     planEndDate: { type: String },
     IP: { type: String },
-    image_src: { type: Schema.Types.Mixed },
     init_vector: { type: Schema.Types.Mixed },
     face_descriptor: { type: Schema.Types.Mixed },
     timestamp: { type: Date, default: new Date() },

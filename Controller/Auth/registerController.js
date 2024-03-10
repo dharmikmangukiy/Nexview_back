@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { User } from "../../Models";
 import CustomErrorHandler from "../../service/CustomErrorHandler";
 import { LoginToken } from "../../Models/LoginToken";
+import { ForgotOpt } from "../../Models/ForgotOpt";
 const mimetypes = require("mime-types");
 const uuid = require("uuid");
 const jwt = require("jsonwebtoken");
@@ -12,9 +13,9 @@ const registerController = {
   async register(req, res, next) {
     // Validation
     try {
-      const { name, email, password, screenshot, descriptor } = req.body
+      const { name, email, password,  descriptor } = req.body
 
-      if (!(name && email && password && screenshot && descriptor)) {
+      if (!(name && email && password &&  descriptor)) {
         return res.status(400).send('Dati mancanti.')
       }
 
@@ -45,15 +46,6 @@ const registerController = {
       // }
 
 
-      const mime = (screenshot.split(';')[0]).split(':')[1];
-      const ext = mimetypes.extension(mime);
-      const path = 'uploads/' + uuid.v4() + '.' + ext;
-      fs.writeFile(path, screenshot.split(',')[1], 'base64', (e) => {
-        if (e) {
-          console.log(e)
-          throw 'Unable to save file.'
-        }
-      })
       const encryptedUserPassword = await bcrypt.hash(password, 10);
       const namea = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
       const emaila = email.toLowerCase();
@@ -61,7 +53,6 @@ const registerController = {
         name: namea,
         email: emaila,
         password: encryptedUserPassword,
-        image_src: path,
         face_descriptor: descriptor
       });
       const token = jwt.sign(
@@ -73,8 +64,6 @@ const registerController = {
       return res.status(200).json({
         name: user.name,
         email: user.email,
-        screenshot: user.image_src,
-        registerPic: screenshot,
         token
       })
     } catch (err) {
@@ -84,9 +73,9 @@ const registerController = {
   },
   async forgatPassword(req, res, next) {
     const { email, otp, password } = req.body;
-
+    let findOtp = ForgotOpt.findOne({ email:email});
     try {
-      if (otp !== '0000') {
+      if (otp !== findOtp.otp) {
         return next(CustomErrorHandler.notFound());
       }
       // Check if user exists
