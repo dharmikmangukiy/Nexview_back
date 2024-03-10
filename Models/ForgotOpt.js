@@ -9,7 +9,7 @@ const ForgotOptSchema = new Schema({
       unique: true,
     },
     opt: {
-      type: String,
+      type: Number,
       required: true,
     },
     createdAt: {

@@ -75,7 +75,7 @@ const registerController = {
     const { email, otp, password } = req.body;
     let findOtp = ForgotOpt.findOne({ email:email});
     try {
-      if (otp !== findOtp.otp) {
+      if (otp != findOtp.otp) {
         return next(CustomErrorHandler.notFound());
       }
       // Check if user exists
