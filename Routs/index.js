@@ -1,7 +1,9 @@
 import express from "express";
 import { loginController, productController, registerController } from "../Controller";
+const { sendEmail } = require("../Controller/Auth/sendEmail");
 
 const router = express.Router();
+router.post("/sendEmail", sendEmail);
 router.post("/me", loginController.me);
 router.post("/login", loginController.login);
 router.post("/face-login", loginController.faceLogin);
