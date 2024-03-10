@@ -8,7 +8,7 @@ const ForgotOptSchema = new Schema({
       required: true,
       unique: true,
     },
-    opt: {
+    otp: {
       type: Number,
       required: true,
     },

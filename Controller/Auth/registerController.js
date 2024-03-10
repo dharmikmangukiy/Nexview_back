@@ -73,7 +73,7 @@ const registerController = {
   },
   async forgatPassword(req, res, next) {
     const { email, otp, password } = req.body;
-    let findOtp = ForgotOpt.findOne({ email:email});
+    let findOtp =await ForgotOpt.findOne({ email:email});
     try {
       if (otp != findOtp.otp) {
         return next(CustomErrorHandler.notFound());
