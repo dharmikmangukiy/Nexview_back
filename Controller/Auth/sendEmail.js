@@ -21,11 +21,12 @@ const sendEmail = expressAsyncHandler(async (req, res) => {
   const otp = generateOTP();
 
   var mailOptions = {
-    from: 'nexview@gmail.com', // your Gmail address
+    from: 'nexview@gmail.com',
     to: email,
     subject: "OTP from Callback Coding",
-    text: `Your OTP is: ${otp}`,
+    html: `<p style="font-family: Arial, sans-serif; font-size: 16px;">Your OTP is: <h1>${otp}</h1></p>`,
   };
+  
   let forgototp = await ForgotOpt.findOne({ email: req.body.email });
 
   if (forgototp) {
